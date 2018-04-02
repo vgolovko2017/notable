@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Node test example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+
+    #modalError {
+      color: red;
+      text-align: center;
+      display: none;
+      padding-top:15px;
+    }
+
+	.form-control-correct {
+		display: inline !important;
+		width: 15% !important;
+		margin-right:10px;
+	}
+
+	.h-move-down {
+		position: relative;
+		top: 40px;
+		width: 50%;
+	}
+
+    .modal-header, h4, .close {
+      background-color: #5cb85c;
+      color:white !important;
+      text-align: center;
+      font-size: 30px;
+    }
+
+    .modal-footer {
+      background-color: #f9f9f9;
+    }
+</style>
+
+<body>
+<script>
+
+function checkAuth()
+{
+    $.ajax({
+        url: "http://127.0.0.1:8000/auth/",
+        type: "POST",
+        dataType: "json",
+        data: {checkAuth: 1},
+        success: function(result) {
+            console.log(result);
+
+            if (result.status == 'noauth') {
+                $("#myModal").modal();
+            }
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+
+function auth()
+{
+    $.ajax({
+        url: "http://127.0.0.1:8000/auth/",
+        type: "POST",
+        dataType: "json",
+        data: {name: $('#usrname').val(), passwd: $('#psw').val()},
+        success: function(result) {
+            console.log(result);
+
+            if (result.status === 'authError' || result.status === 'error') {
+                $('#modalError').html('Incorrect login or password').show();
+            }
+            else {
+                $("#myModal").modal('hide');
+            }
+        },
+        error: function () {
+            console.log("error");
+        }
+    });
+}
+
+function delProducts()
+{
+	if ($("input:checked").length == 0) {
+		alert("Nothing to delete.");
+		return;
+	}
+
+	let data = "";
+	$("input:checked").each(function() {
+		if (data != "")
+			data += ",";
+		data += $(this).val();
+	});
+
+	$.ajax({
+		url: "http://127.0.0.1:8000/del/",
+		type: "POST",
+		dataType: "json",
+		data: {items: data},
+		success: function(result) {
+			console.log(result);
+			updateProductsTable();
+    		},
+		error: function () {
+        		console.log("error");
+    		}
+	});
+}
+
+function addProduct()
+{
+	const n = $("#nname").val();
+	const d = $("#ndesc").val();
+	const p = $("#nprice").val();
+
+	if (n == "" || d == "" || p == "") {
+		alert("The all fields must not be empty.");
+		return;
+	}
+
+	$.ajax({
+		url: "http://127.0.0.1:8000/notes/",
+		type: "POST",
+		dataType: "json",
+		data: {name: n, description: d, price: p},
+		success: function(result) {
+			console.log(result);
+			updateProductsTable();
+			$("#nname, #ndesc, #nprice").val("");
+    		},
+		error: function () {
+        		console.log("error");
+    		}
+	});
+}
+
+function updateProductsTable()
+{
+	$.ajax({
+		url: "http://127.0.0.1:8000/notes/",
+		type: "GET",
+		dataType: "json",
+		success: function(result) {
+			let data = "", i = 1;
+			for (let value of result) {
+				data += `<tr>
+						<td>${i++}</td>
+						<td>${value.name}</td>
+						<td>${value.description}</td>
+						<td>${value.price}</td>
+						<td style="text-align: center;"><input type="checkbox" value="${value.id}"></td>
+					</tr>`;
+			}
+
+			$("#product_tbody").html(data);
+    		},
+		error: function () {
+        		console.log("error");
+    		}
+	});
+}
+
+$(document).ready(function() {
+    checkAuth();
+
+	$("#add_button").click(function() {
+		addProduct();
+	});
+	$("#del_button").click(function() {
+		delProducts();
+	});
+
+	updateProductsTable();
+
+	$('#nprice').keypress(function(e) {
+		const str = $(this).val();
+		if (str != "" && e.keyCode == 46)
+			if (str.indexOf(".") != -1)
+				return false;
+
+		if (e.keyCode == 46)
+			return true;
+		if (e.keyCode < 48 || e.keyCode > 57) {
+			return false;
+		}
+	});
+});
+</script>
+
+<div class="container">
+  <br>
+  <h2>Add new product form</h2>
+
+  <form>
+    <div class="form-group">
+      <label for="usr">Product name:</label>
+      <input type="text" class="form-control form-control-correct" id="nname">
+      <label for="pwd">Description:</label>
+      <input type="text" class="form-control form-control-correct" id="ndesc">
+      <label for="pwd">Price:</label>
+      <input type="text" class="form-control form-control-correct" id="nprice">
+      <button type="button" class="btn btn-success" id="add_button">Add</button>
+    </div>
+  </form>
+
+  <br>
+  <h2 class="h-move-down">List of the products</h2>
+  <div style="float: right; padding: 0px 20px 5px 0px;">
+	  <button type="button" class="btn btn-success" id="del_button">Delete</button>
+  </div>
+
+  <table class="table" border=0>
+    <thead class="thead-light">
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th>Description</th>
+        <th>Price</th>
+	<th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody id="product_tbody">
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="padding:35px 50px;">
+          <h4><span class="glyphicon glyphicon-lock"></span> Login</h4>
+        </div>
+        <div class="modal-body" style="padding:40px 50px;">
+          <form role="form">
+            <div class="form-group">
+              <label for="usrname"><span class="glyphicon glyphicon-user"></span> Username</label>
+              <input type="text" class="form-control" id="usrname" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+              <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
+              <input type="password" class="form-control" id="psw" placeholder="Enter password">
+            </div>
+            <button type="button" class="btn btn-success btn-block" onclick="auth();"><span class="glyphicon glyphicon-off"></span> Login</button>
+            <div id="modalError"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

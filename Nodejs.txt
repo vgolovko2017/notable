@@ -1,0 +1,44 @@
+// server URL для webstorm
+http://nodde.ru:1027
+
+// Обработка ошибок http.request() и многое другое
+// req.on('error', (e) => {
+https://nodejs.org/api/http.html#http_http_request_options_callback
+
+// установка nvm (позволяет переключать версии node)
+https://www.digitalocean.com/community/tutorials/node-js-ubuntu-16-04-ru
+
+// хорошие видеоуроки по nodeJs
+https://learn.javascript.ru/screencast/nodejs
+
+// JavaScript - Асинхронные функции (async/await)
+// jsonplaceholder - https://jsonplaceholder.typicode.com (болванка для обработки get/post запросов)
+https://www.youtube.com/watch?time_continue=10&v=5kAPExqSZ1I
+
+// как поднять Redis на localhost
+https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-redis-on-ubuntu-16-04
+
+// express-sessions
+https://glebbahmutov.com/blog/express-sessions/
+
+// passport auth
+http://www.itlessons.info/nodejs/auth-with-express-and-passportjs/
+
+// установка mongoDb
+https://www.digitalocean.com/community/tutorials/mongodb-ubuntu-16-04-ru
+
+// mongoDb + js examples
+https://www.w3schools.com/nodejs/nodejs_mongodb_insert.asp
+
+// User Authentication with Passport and Express 4 + working example (sudo systemctl status mongodb - show path to config)
+http://mherman.org/blog/2015/01/31/local-authentication-with-passport-and-express-4/#.Wr43xXVuacY
+https://github.com/mjhea0/passport-local-express4
+
+// Social Authentication with Passport.js
+http://mherman.org/blog/2013/11/10/social-authentication-with-passport-dot-js/#.Wr5K03VuacY
+// google auth2 passport only
+https://github.com/mstade/passport-google-oauth2
+
+// чат на socket.io
+https://www.youtube.com/watch?list=PLsuEohlthXdkRSxJTkmTstWKHgBHsd3Dx&v=nlA-3jIfT-Q
+
